@@ -1,11 +1,43 @@
 """"Class of People """
 import random
 import networkx
+import names
+
+def generate_people(node_graph,number_of_people,type, start_location='home'):
+    list_people=[]
+    name=names.generate_word(8)
+    home_list=node_graph.home_list
+    node_IDs = list(node_graph.nodes)
+
+    for i in range(number_of_people):
+        home_node = random.choice(home_list)
+        if start_location == 'home':
+            start_node = home_node
+        if start_location == 'random':
+            start_node = random.choice(node_IDs)
+        list_people.append(person(start_node,node_graph,type,home_node,name))
+
+    return list_people
+
+
+def make_node_subset(node_graph, fraction):
+    """Returns a list of nodes that have been randomly assigned to be bars, each with 'frac_bars' probability"""
+    node_IDs = list(node_graph.nodes)
+    node_list = []
+    for ID in node_IDs:
+        rand_num = random.random()
+        if rand_num < fraction:
+            node_list.append(ID)
+    return node_list
+
+
+
+
 
 class person():
     """Class for people objects which traverse the node"""
 
-    def __init__(self, start_node, graph_object):
+    def __init__(self, start_node, graph_object, type_name, home_node, name):
 
         # Set graph
         self.graph=graph_object
@@ -14,15 +46,15 @@ class person():
         self.current_node = start_node  # Via node ID
 
         # Can generate name from list later
-        self.name="Bob"
-        self.type='random'
-        self.home='1324666940'
+        self.name=name
+        self.type=type_name
+        self.home=home_node
         self.active=True
-        print (self.current_node)
 
         # Select a path from the starting node
         self.make_decision()
-
+        self.traveled_distance=0
+        self.total_distance=False
 
 
     def make_decision(self):
@@ -125,7 +157,6 @@ class person():
     def node_shortest_path(self,target):
         """Returns the next node on the shortest path from 'current_node' to 'goal_node'"""
         path = networkx.shortest_path(self.graph, self.current_node, target)
-        print(path)
 
         if len(path)>1:
             next_node=path[1]
@@ -133,7 +164,6 @@ class person():
             next_node=path[0]
             self.active=False
             print ("I am home")
-        print(next_node)
         return next_node
 
 
