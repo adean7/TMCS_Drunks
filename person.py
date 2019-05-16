@@ -1,5 +1,6 @@
 """"Class of People """
 import networkx
+import random
 
 def calc_distance(x1,y1,x2,y2):
     # set distance to next node
@@ -24,7 +25,7 @@ class people():
         # Get these from the graph object via node ID
         self.x=self.graph.nodes[self.current_node]['lon']
         self.y=self.graph.nodes[self.current_node]['lat']
-        self.neighbours = self.graph.neighbours(self.current_node)
+        self.neighbors = list(self.graph.neighbors(self.current_node))
 
         # Can generate name from list later
         self.name="Bob"
@@ -34,17 +35,23 @@ class people():
 
         self.make_decision()
 
-
-
-
+    def random_node(self):
+        num_nodes = len(self.neighbors)
+        rand_node_index = random.randint(0, num_nodes - 1)
+        next_node = self.neighbors[rand_node_index]
+        return next_node
 
     def make_decision(self):
         """Function to decide which node to travel to next based on current node"""
-        #make choice from connected_nodes
-        self.next_node = None
+        # make choice from connected_nodes
+
+        self.next_node = self.random_node()
         self.total_distance = self.graph[self.current_node][self.next_node]['distance']
         self.traveled_distance=0
         self.speed = 1.0
+        print ("Decision Made")
+        print ("Next node: ", self.next_node)
+        print ("Distance: ", self.total_distance)
 
 
 
