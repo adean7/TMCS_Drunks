@@ -1,5 +1,6 @@
 import osm2graph    # premade module uesd to convert map file to graph
 import gzip         # the map file is compressed with the gzip algorithm
+import networkx
 
 # Graph object is a dictionary where each ID corresponds to a node
 # Each node object is itself a dictionary containing information
@@ -15,6 +16,8 @@ import gzip         # the map file is compressed with the gzip algorithm
 # to get the distance between 2 nodes
 #   distance = graph[node_ID_1][node_ID_2]['distance']
 
+
+# Out of date - do not use
 def make_graph(gzip_file, only_roads=True):
     """
     Create a graph object, including scalar distances between nodes
@@ -54,7 +57,67 @@ def make_graph(gzip_file, only_roads=True):
 
     return graph
 
-#G = make_graph('stuff_provided/planet_-1.275,51.745_-1.234,51.762.osm.gz')
+
+class CustomGraph(networkx.Graph):
+    """
+    Graph of nodes. Each connection has the node-node distance specified
+    """
+
+    def __init__(self, gzip_file, only_roads=True):
+
+        # Create the base graph from parser
+        with gzip.open(gzip_file) as infile:
+            base_graph = osm2graph.read_osm(infile, only_roads)
+
+        # Init the object based on the base graph
+        super().__init__(base_graph)
+
+        # Add the distances between nodes
+        # Get a list of node IDs
+        node_IDs = list(self.nodes)
+
+        for ID in node_IDs:
+
+            # Find coordinates of the start node
+            start_lon = self.nodes[ID]['lon']
+            start_lat = self.nodes[ID]['lat']
+
+            # Find the neighbours of the node
+            neighbour_IDs = list(self.neighbors(ID))
+
+            for final_ID in neighbour_IDs:
+                # Find coordinates of the end node
+                final_lon = self.nodes[final_ID]['lon']
+                final_lat = self.nodes[final_ID]['lat']
+
+                # Calculate the distance between the two nodes
+                d = osm2graph.haversine(start_lon, start_lat, final_lon, final_lat)
+                self[ID][final_ID]['distance'] = d
+
+
+    def map_range(self):
+        """
+        Returns the range of longitude and latitude values for the graph
+        """
+
+        # Get a list of longitude and latitudes
+        node_IDs = list(self.nodes)
+
+        longitudes = []
+        latitudes = []
+
+        for ID in node_IDs:
+
+            longitudes.append( self.nodes[ID]['lon'] )
+            latitudes.append( self.nodes[ID]['lat'] )
+
+        # Calculate the range of longitudes and latitudes
+        range_longitudes = [min(longitudes), max(longitudes)]
+        range_latitudes = [min(latitudes), max(latitudes)]
+
+        return range_longitudes, range_latitudes
+
+
 
 
 
