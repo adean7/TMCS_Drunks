@@ -29,6 +29,8 @@ class people():
 
         # Can generate name from list later
         self.name="Bob"
+        self.type='drunk'
+        self.home=start_node
 
         self.traveled_distance = 0
         self.speed = 0
