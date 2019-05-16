@@ -58,6 +58,22 @@ def make_graph(gzip_file, only_roads=True):
     return graph
 
 
+def make_node_subset(node_graph, fraction):
+    """
+    Randomly selects a fraction of nodes to create a subset
+    """
+
+    node_IDs = list(node_graph.nodes)
+    node_list = []
+
+    for ID in node_IDs:
+
+        if (random.random() < fraction):
+            node_list.append(ID)
+
+    return node_list
+
+
 class CustomGraph(networkx.Graph):
     """
     Graph of nodes. Each connection has the node-node distance specified
@@ -68,6 +84,10 @@ class CustomGraph(networkx.Graph):
         # Create the base graph from parser
         with gzip.open(gzip_file) as infile:
             base_graph = osm2graph.read_osm(infile, only_roads)
+
+        # Return the largest connected graph
+        nodes_of_largest_graph = max(networkx.connected_components(base_graph), key=len)
+        base_graph = base_graph.subgraph(nodes_of_largest_graph)
 
         # Init the object based on the base graph
         super().__init__(base_graph)
@@ -93,6 +113,10 @@ class CustomGraph(networkx.Graph):
                 # Calculate the distance between the two nodes
                 d = osm2graph.haversine(start_lon, start_lat, final_lon, final_lat)
                 self[ID][final_ID]['distance'] = d
+
+        # Add a list of pubs and homes
+        self.pub_list = make_node_subset(self, 0.1)
+        self.home_list = make_node_subset(self, 0.2)
 
 
     def map_range(self):
