@@ -1,6 +1,7 @@
 import osm2graph    # premade module uesd to convert map file to graph
 import gzip         # the map file is compressed with the gzip algorithm
 import networkx
+import random
 
 # Graph object is a dictionary where each ID corresponds to a node
 # Each node object is itself a dictionary containing information
