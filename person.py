@@ -70,7 +70,7 @@ class person():
 
         # Set speed
         # Constant for now, may change later
-        self.speed = 1.0
+        self.speed = 5.0
 
         # Set the relevant positions from the nodes
         # Check if person has reached his destinaction and is now flagged inactive
