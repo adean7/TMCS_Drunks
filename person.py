@@ -13,7 +13,9 @@ class person():
         self.current_node = start_node  # Via node ID
 
         # Can generate name from list later
-        self.name = "Bob"
+        self.name="Bob"
+        self.type='drunk'
+        self.home=start_node
 
         # Select a path from the starting node
         self.make_decision()
