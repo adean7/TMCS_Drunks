@@ -50,12 +50,11 @@ def make_graph(gzip_file, only_roads=True):
 
             # Calculate the distance between the two nodes
             d = osm2graph.haversine(start_lon, start_lat, final_lon, final_lat)
-            print(d)
             graph[ID][final_ID]['distance'] = d
 
     return graph
 
-#   G = make_graph('stuff_provided/planet_-1.275,51.745_-1.234,51.762.osm.gz')
+#G = make_graph('stuff_provided/planet_-1.275,51.745_-1.234,51.762.osm.gz')
 
 
 
