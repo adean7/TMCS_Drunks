@@ -137,7 +137,7 @@ if __name__ == '__main__':
     graph = graph.CustomGraph('stuff_provided/planet_-1.275,51.745_-1.234,51.762.osm.gz')
 
     # Load people
-    people = person.generate_people(graph, 100, 'pub', 'random')
+    people = person.generate_people(graph, 100, 'home', 'random')
 
     # Create an instance of a window
     window = graphicsWindow(people, graph)
