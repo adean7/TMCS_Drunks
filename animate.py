@@ -56,6 +56,9 @@ class graphicsWindow(pyglet.window.Window):
         # Get the coordinates of the vertices on a circle
         self.verts_x, self.verts_y = circle_vertices(num_verts, radius)
 
+        # Set window timer
+        self.timer = 0
+
 
     def set_positions(self, people):
 
@@ -79,11 +82,15 @@ class graphicsWindow(pyglet.window.Window):
 
 
     def update(self, dt):
-
+        self.timer += 1
+        print (self.timer)
         for i in range(self.num_people):
-            people[i].update_position()
+            people[i].update_position(self.timer)
 
         self.set_positions(people)
+
+        # Update the window timer
+
 
 
     def on_draw(self):
@@ -100,22 +107,20 @@ class graphicsWindow(pyglet.window.Window):
         #pyglet.gl.glPointSize(10)
 
 
-
         for i in range(self.num_people):
 
-            # Convert coordinates to image coordinates
-            lon, lat = self.convert_coordinate(self.x[i], self.y[i])
+            # If the person is flagged to be shown
+            if people[i].show:
 
-            # Construct a circle
-            coords = draw_circle(lon, lat, self.verts_x, self.verts_y)
+                # Convert coordinates to image coordinates
+                lon, lat = self.convert_coordinate(self.x[i], self.y[i])
 
-            # Converts single point to list of points to form a circle
-         #   lon, lat = self.convert_coordinate(self.x[i], self.y[i])
-         #   coords = draw_circle(num_verts, lon, lat, radius)
+                # Construct a circle
+                coords = draw_circle(lon, lat, self.verts_x, self.verts_y)
 
-            # Draw circles
-            coords_list = pyglet.graphics.vertex_list(len(self.verts_x), ('v2f', coords))
-            coords_list.draw(pyglet.gl.GL_POLYGON)  # Use .GL_POINTS if circles don't need to be filled
+                # Draw circles
+                coords_list = pyglet.graphics.vertex_list(len(self.verts_x), ('v2f', coords))
+                coords_list.draw(pyglet.gl.GL_POLYGON)  # Use .GL_POINTS if circles don't need to be filled
 
 
 # This is the main game engine loop
@@ -131,7 +136,7 @@ if __name__ == '__main__':
     graph = graph.CustomGraph('stuff_provided/planet_-1.275,51.745_-1.234,51.762.osm.gz')
 
     # Load people
-    people = person.generate_people(graph, 100, 'random', 'random')
+    people = person.generate_people(graph, 100, 'home', 'random')
 
     # Create an instance of a window
     window = graphicsWindow(people, graph)
