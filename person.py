@@ -7,14 +7,17 @@ def generate_people(node_graph,number_of_people,type, start_location='home'):
     list_people=[]
     name=names.generate_word(8)
     home_list=node_graph.home_list
+    pub_list = node_graph.pub_list
     node_IDs = list(node_graph.nodes)
 
     for i in range(number_of_people):
-        home_node = random.choice(home_list)
         if start_location == 'home':
+            home_node = random.choice(home_list)
             start_node = home_node
         if start_location == 'random':
             start_node = random.choice(node_IDs)
+        if start_location == 'pub':
+            start_node = random.choice(pub_list)
         list_people.append(person(start_node,node_graph,type,home_node,name))
 
     return list_people
@@ -67,6 +70,8 @@ class person():
             self.next_node = self.random_node(neighbors)
         if self.type == 'home':
             self.next_node=self.node_to_home()
+        if self.type == 'pub':
+            self.next_node = self.node_to_pub()
 
         # Set speed
         # Constant for now, may change later
@@ -152,6 +157,22 @@ class person():
     def node_to_home(self):
         """Returns the next node on the shortest path toward home"""
         next_node = self.node_shortest_path(self.home)
+        return next_node
+
+    def node_to_pub(self):
+        """Returns the next node on the shortest path toward nearest pub"""
+        nearest_pub = self.find_nearest_pub()
+        next_node = self.node_shortest_path(nearest_pub)
+        return next_node
+
+    def find_nearest_pub(self):
+        """Returns the node ID of the nearest pub"""
+        distances = []
+        for pub in self.graph.pub_list:
+            # Find shortest distance between current_node and the bar
+            d = networkx.shortest_path_length(self.graph, self.current_node, pub)
+            distances.append(d)
+        next_node = self.graph.pub_list.index(min(distances))
         return next_node
 
     def node_shortest_path(self,target):
