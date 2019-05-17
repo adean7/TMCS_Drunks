@@ -27,7 +27,6 @@ def generate_people(node_graph,number_of_people,type, start_location='home'):
         else:
             raise ValueError("Invalid person type input")
 
-
         list_people.append(person(start_node, node_graph, type, home_node, name))
 
     return list_people
