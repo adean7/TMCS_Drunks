@@ -1,10 +1,10 @@
 import pyglet
 import pyglet.gl
 import math
-import graph
+from graph import CustomGraph
 import person
 from PIL import Image
-#import random
+import pickle
 
 
 def circle_vertices(num_verts, radius, center_x=0, center_y=0):
@@ -139,7 +139,8 @@ if __name__ == '__main__':
     sprite = pyglet.sprite.Sprite(img=pyglet.image.load_animation(image))
 
     # Load graph
-    graph = graph.CustomGraph('stuff_provided/planet_-1.275,51.745_-1.234,51.762.osm.gz')
+#    graph = graph.CustomGraph('stuff_provided/planet_-1.275,51.745_-1.234,51.762.osm.gz')
+    graph = pickle.load(open('graph.pkl', 'rb'))
 
     # Load people
     people_home = person.generate_people(graph, 50, 'home', 'random')

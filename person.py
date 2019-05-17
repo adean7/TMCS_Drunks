@@ -11,7 +11,7 @@ def generate_people(node_graph,number_of_people,type, start_location='home'):
     pub_list = node_graph.pub_list
     node_IDs = list(node_graph.nodes)
 
-    for i in range(number_of_people)
+    for i in range(number_of_people):
 
         home_node = random.choice(home_list)
 
@@ -26,7 +26,6 @@ def generate_people(node_graph,number_of_people,type, start_location='home'):
 
         else:
             raise ValueError("Invalid person type input")
-
 
         list_people.append(person(start_node, node_graph, type, home_node, name))
 
