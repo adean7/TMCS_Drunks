@@ -50,6 +50,7 @@ class person():
         self.type=type_name
         self.home=home_node
         self.active=True
+        self.show=True
 
         # Select a path from the starting node
         self.make_decision()
