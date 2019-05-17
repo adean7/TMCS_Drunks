@@ -75,8 +75,6 @@ class CustomGraph(networkx.Graph):
 
         for stride, ID in enumerate(node_IDs):
 
-            # Add the edge distances
-
             # Find coordinates of the start node
             start_lon = self.nodes[ID]['lon']
             start_lat = self.nodes[ID]['lat']
@@ -120,6 +118,19 @@ class CustomGraph(networkx.Graph):
         # Return the index of the closest pub
         return numpy.argmin(distances)
 
+    def count_zombies_node(self,list_of_people):
+    """Counts number of zombies recently on each node"""
+        node_IDs = list(self.nodes)
+
+        # set number of zombies on each node to zero
+        for node in node_IDs:
+            self.zombies[node] = 0
+        for i in range(len(list_of_people)):
+            if list_of_people[i].type == 'zombie':
+                self.zombies[list_of_people[i].current_node]+=1
+
+
+    #    self.num_on_edge[]
 
     def map_range(self):
         """

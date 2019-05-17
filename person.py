@@ -83,12 +83,22 @@ class person():
           if self.current_node == self.home:
                 print ("I am home")
                 self.active=False
+                self.type='random'
                 self.wakeup_time=global_time+200
           else:
                 self.next_node=self.node_to_home()
 
         if self.type == 'pub':
-            self.next_node = self.node_to_pub()
+            if self.current_node in self.graph.pub_list:
+                print ("I am at pub")
+                self.active=False
+                self.type='home'
+                self.wakeup_time=global_time+200
+            else:
+                self.next_node = self.node_to_pub()
+
+        if self.type == "zombie":
+            self.next_node = self.random_node(neighbors)
 
 
         # Set speed
@@ -96,7 +106,7 @@ class person():
         self.speed = 5.0
 
         # Set the relevant positions from the nodes
-        # Check if person has reached his destinaction and is now flagged inactive
+        # Check if person has reached his destination and is now flagged inactive
         if self.active==True:
             self.new_path_positions(self.current_node, self.next_node)
         else:
@@ -193,7 +203,8 @@ class person():
             # Find shortest distance between current_node and the bar
             d = networkx.shortest_path_length(self.graph, self.current_node, pub)
             distances.append(d)
-        next_node = self.graph.pub_list.index(min(distances))
+        index_nearest_pub  = distances.index(min(distances))
+        next_node = self.graph.pub_list[index_nearest_pub]
         return next_node
 
     def node_shortest_path(self,target):
