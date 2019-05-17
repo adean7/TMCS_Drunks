@@ -82,14 +82,16 @@ class graphicsWindow(pyglet.window.Window):
 
 
     def update(self, dt):
-
+        # Update the window timer
+        self.timer += 1
+        print (self.timer)
         for i in range(self.num_people):
-            people[i].update_position()
+            people[i].update_position(self.timer)
 
         self.set_positions(people)
 
-        # Update the window timer
-        self.timer += dt
+    
+
 
 
     def on_draw(self):
@@ -135,7 +137,7 @@ if __name__ == '__main__':
     graph = graph.CustomGraph('stuff_provided/planet_-1.275,51.745_-1.234,51.762.osm.gz')
 
     # Load people
-    people = person.generate_people(graph, 100, 'random', 'random')
+    people = person.generate_people(graph, 100, 'home', 'random')
 
     # Create an instance of a window
     window = graphicsWindow(people, graph)

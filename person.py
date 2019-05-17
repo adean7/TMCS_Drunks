@@ -140,7 +140,10 @@ class person():
                 self.x += distance_moved * self.unit_vector[0]
                 self.y += distance_moved * self.unit_vector[1]
         else:
-            pass
+            if global_time==self.wakeup_time:
+                self.type='random'
+                self.active=True
+                print("I am leaving home")
 
 
     def check_at_node(self):
