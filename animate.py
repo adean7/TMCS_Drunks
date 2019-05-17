@@ -21,7 +21,7 @@ def circle_vertices(num_verts, radius, center_x=0, center_y=0):
         verts_x.append((cos_theta - sin_theta) * radius + center_x)
         verts_y.append((cos_theta + sin_theta) * radius + center_y)
 
-    return verts_x, verts_y
+    return verts_x, verts_y, len(verts_x)
 
 
 def draw_circle(center_x, center_y, verts_x, verts_y):
@@ -33,13 +33,6 @@ def draw_circle(center_x, center_y, verts_x, verts_y):
         coords.append(center_y + verts_y[i])
 
     return coords
-
-def get_colour(type):
-    dict = {
-        'home': [0, 0, 1],
-        'random': [1, 0, 0],
-    }
-    return dict.get(type)
 
 
 class graphicsWindow(pyglet.window.Window):
@@ -60,11 +53,20 @@ class graphicsWindow(pyglet.window.Window):
         self.set_positions(people)
 
         # Get the coordinates of the vertices on a circle
-        self.verts_x, self.verts_y = circle_vertices(num_verts, radius)
+        self.verts_x, self.verts_y, self.num_verts = circle_vertices(num_verts, radius)
 
         # Set window timer
         self.timer = 0
 
+        self.color_list = {
+            'home': [0, 0, 1],  # Blue
+            'random': [1, 0, 0],  # Red
+            'pub': [0, 1, 0],  # Green
+            'none': [0, 0, 0]  # Black
+            }
+
+    def get_colour(self, arg):
+        self.color = self.color_list.get(arg.type, 'none')
 
     def set_positions(self, people):
 
@@ -74,7 +76,6 @@ class graphicsWindow(pyglet.window.Window):
         for i in range(self.num_people):
             self.x.append(people[i].x)
             self.y.append(people[i].y)
-
 
     def convert_coordinate(self, lon, lat):
 
@@ -94,21 +95,36 @@ class graphicsWindow(pyglet.window.Window):
 
         self.set_positions(people)
 
-
     def on_draw(self):
-
         # Clear the graphics buffer
         #pyglet.gl.glClearColor(1, 1, 1, 1)
         pyglet.gl.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT)
 
         # Draw background
-        sprite.draw()
+        sprite_background.draw()
 
-        # Set people colour and size (only use size if not using draw_circle)
-        pyglet.gl.glColor3f(1, 0, 0)
-        #pyglet.gl.glPointSize(10)
+        # Set initial colour as white
+        pyglet.gl.glColor3f(1, 1, 1)
 
+        # Draw homes
+        for ID in home_list:
+            # Convert coordinates to image coordinates
+            lon, lat = self.convert_coordinate(graph.nodes[ID]['lon'], graph.nodes[ID]['lat'])
 
+            # Draw sprites
+            sprite_home.x, sprite_home.y = lon, lat
+            sprite_home.draw()
+
+        # Draw pubs
+        for ID in pub_list:
+            # Convert coordinates to image coordinates
+            lon, lat = self.convert_coordinate(graph.nodes[ID]['lon'], graph.nodes[ID]['lat'])
+
+            # Draw sprites
+            sprite_pub.x, sprite_pub.y = lon, lat
+            sprite_pub.draw()
+
+        # Draw people
         for i in range(self.num_people):
 
             # If the person is flagged to be shown
@@ -121,11 +137,11 @@ class graphicsWindow(pyglet.window.Window):
                 coords = draw_circle(lon, lat, self.verts_x, self.verts_y)
 
                 # Set draw colour depending on person type
-                color = get_colour(people[i].type)
-                pyglet.gl.glColor3f(color[0], color[1], color[2])
+                self.get_colour(people[i])
+                pyglet.gl.glColor3f(self.color[0], self.color[1], self.color[2])
 
                 # Draw circles
-                coords_list = pyglet.graphics.vertex_list(len(self.verts_x), ('v2f', coords))
+                coords_list = pyglet.graphics.vertex_list(self.num_verts, ('v2f', coords))
                 coords_list.draw(pyglet.gl.GL_POLYGON)  # Use .GL_POINTS if circles don't need to be filled
 
 
@@ -133,10 +149,22 @@ class graphicsWindow(pyglet.window.Window):
 if __name__ == '__main__':
 
     # Load background image
-    image = 'oxford.png'
-    im = Image.open(image)
+    img_background = 'oxford.png'
+    im = Image.open(img_background)
     img_width, img_height = im.size
-    sprite = pyglet.sprite.Sprite(img=pyglet.image.load_animation(image))
+    sprite_background = pyglet.sprite.Sprite(img=pyglet.image.load(img_background))
+
+    # Load home image
+    img_home = 'home.png'
+    img_obj_home = pyglet.image.load(img_home)
+    sprite_home = pyglet.sprite.Sprite(img_obj_home)
+    sprite_home.scale = 0.4
+
+    # Load pub image
+    img_pub = 'pub.png'
+    img_obj_pub = pyglet.image.load(img_pub)
+    sprite_pub = pyglet.sprite.Sprite(img_obj_pub)
+    sprite_pub.scale = 1
 
     # Load graph
     graph = graph.CustomGraph('stuff_provided/planet_-1.275,51.745_-1.234,51.762.osm.gz')
@@ -144,7 +172,14 @@ if __name__ == '__main__':
     # Load people
     people_home = person.generate_people(graph, 50, 'home', 'random')
     people_rand = person.generate_people(graph, 50, 'random', 'random')
-    people = people_home + people_rand
+    #people_pub = person.generate_people(graph, 50, 'pub', 'random')
+    people = people_home + people_rand #+ people_pub
+
+    # Load homes
+    home_list = graph.home_list
+
+    # Load pubs
+    pub_list = graph.pub_list
 
     # Create an instance of a window
     window = graphicsWindow(people, graph)
@@ -154,5 +189,5 @@ if __name__ == '__main__':
     pyglet.clock.schedule_interval(window.update, 1 / 30.0)
 
     # Run pyglet
-    sprite.draw()
     pyglet.app.run()
+
