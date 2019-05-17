@@ -86,13 +86,17 @@ class graphicsWindow(pyglet.window.Window):
 
         return lon, lat
 
-    def update(self, dt):
+    def update(self, graph, dt):
         # Update the window timer
         self.timer += 1
+        graph.count_zombies_node(self.people)
         for i in range(self.num_people):
+            
             people[i].update_position(self.timer)
 
+
         self.set_positions(people)
+
 
 
     def on_draw(self):
@@ -151,7 +155,7 @@ if __name__ == '__main__':
     window.set_size(img_width, img_height)
 
     # Tell pyglet the on_draw() & update() timestep
-    pyglet.clock.schedule_interval(window.update, 1 / 30.0)
+    pyglet.clock.schedule_interval(window.update, graph, 1 / 30.0)
 
     # Run pyglet
     sprite.draw()
