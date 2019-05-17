@@ -59,9 +59,9 @@ class graphicsWindow(pyglet.window.Window):
         self.timer = 0
 
         self.color_list = {
-            'home': [0, 0, 1],  # Blue
+            'home': [0, 0, 1],  # Blue # People going home
             'random': [1, 0, 0],  # Red
-            'pub': [0, 1, 0],  # Green
+            'pub': [0, 0.5, 0],  # Green # People who are drunk
             'none': [0, 0, 0]  # Black
             }
 
@@ -161,6 +161,8 @@ if __name__ == '__main__':
     # Load home image
     img_home = 'home.png'
     img_obj_home = pyglet.image.load(img_home)
+    img_obj_home.anchor_x = int(img_obj_home.width*0.52) #* 0.5
+    img_obj_home.anchor_y = int(img_obj_home.height*0.3) #* 0.5
     sprite_home = pyglet.sprite.Sprite(img_obj_home)
     sprite_home.scale = 0.4
 
@@ -173,14 +175,12 @@ if __name__ == '__main__':
     # Load graph
 #    graph = graph.CustomGraph('stuff_provided/planet_-1.275,51.745_-1.234,51.762.osm.gz')
     graph = pickle.load(open('graph.pkl', 'rb'))
-    print(graph.pub_list)
 
     # Load people
-    people_home = person.generate_people(graph, 50, 'home', 'random')
-    people_rand = person.generate_people(graph, 50, 'random', 'random')
-
-    #people_pub = person.generate_people(graph, 50, 'pub', 'random')
-    people = people_home + people_rand #+ people_pub
+    #people_home = person.generate_people(graph, 50, 'home', 'random')
+    #people_rand = person.generate_people(graph, 50, 'random', 'random')
+    people_pub = person.generate_people(graph, 150, 'pub', 'random')
+    people = people_pub #+ people_home + people_rand #
 
     # Load homes
     home_list = graph.home_list

@@ -66,7 +66,7 @@ class CustomGraph(networkx.Graph):
 
         # Add a list of pubs and homes
         self.pub_list = make_node_subset(self, 0.001)   # 0.001
-        self.home_list = make_node_subset(self, 0.2)
+        self.home_list = make_node_subset(self, 0.002)
 
         #print(self.pub_list)
 
@@ -101,8 +101,6 @@ class CustomGraph(networkx.Graph):
             
             # Label each node with the number of zombies
             self.nodes[ID]['num_zombies']=0
-            
-            print(stride, len(node_IDs))
 
 
     def nearest_node_from_list(self, start_node, target_list):

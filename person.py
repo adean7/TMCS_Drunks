@@ -66,9 +66,13 @@ class person():
 
         # Select a path from the starting node
         initial_global_time=0
+        self.random_decisions = 0
         self.make_decision(initial_global_time)
         self.traveled_distance=0
         self.total_distance=False
+
+        #edgy last minute changes
+
 
 
     def make_decision(self,global_time):
@@ -79,12 +83,16 @@ class person():
         neighbors = list(self.graph.neighbors(self.current_node))
         if self.type == 'random':
             self.next_node = self.random_node(neighbors)
+            self.random_decisions += 1
+            if self.random_decisions>300:
+                self.type = 'home'
+
         elif self.type == 'home':
           if self.current_node == self.home:
                 print ("I am home")
                 self.active=False
-                self.type='random'
-                self.wakeup_time=global_time+200
+                self.type='home'
+                self.wakeup_time=global_time+400000
           else:
                 self.next_node=self.node_to_home()
 
@@ -92,7 +100,7 @@ class person():
             if self.current_node in self.graph.pub_list:
                 print ("I am at pub")
                 self.active=False
-                self.type='home'
+                self.type='random'
                 self.wakeup_time=global_time+200
             else:
                 self.next_node = self.node_to_pub()
@@ -167,7 +175,8 @@ class person():
                 self.y += distance_moved * self.unit_vector[1]
         else:
             if global_time==self.wakeup_time:
-                self.type='random'
+
+                #self.type='random'
                 self.active=True
                 print("I am leaving home")
 
