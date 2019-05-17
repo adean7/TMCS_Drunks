@@ -50,7 +50,7 @@ class graphicsWindow(pyglet.window.Window):
         self.num_people = len(people)
 
         # Set initial positions
-        self.set_positions(people)
+        self.set_positions()
 
         # Get the coordinates of the vertices on a circle
         self.verts_x, self.verts_y, self.num_verts = circle_vertices(num_verts, radius)
@@ -68,14 +68,14 @@ class graphicsWindow(pyglet.window.Window):
     def get_colour(self, arg):
         self.color = self.color_list.get(arg.type, 'none')
 
-    def set_positions(self, people):
+    def set_positions(self):
 
         self.x = []
         self.y = []
 
         for i in range(self.num_people):
-            self.x.append(people[i].x)
-            self.y.append(people[i].y)
+            self.x.append(self.people[i].x)
+            self.y.append(self.people[i].y)
 
     def convert_coordinate(self, lon, lat):
 
@@ -96,8 +96,7 @@ class graphicsWindow(pyglet.window.Window):
                 self.people[i].type = 'zombie'
             self.people[i].update_position(self.timer)
 
-
-        self.set_positions(people)
+        self.set_positions()
 
     def on_draw(self):
         # Clear the graphics buffer
@@ -161,14 +160,16 @@ if __name__ == '__main__':
     # Load home image
     img_home = 'home.png'
     img_obj_home = pyglet.image.load(img_home)
-    img_obj_home.anchor_x = int(img_obj_home.width*0.52) #* 0.5
-    img_obj_home.anchor_y = int(img_obj_home.height*0.3) #* 0.5
+    img_obj_home.anchor_x = int(img_obj_home.width * 0.52)
+    img_obj_home.anchor_y = int(img_obj_home.height * 0.3)
     sprite_home = pyglet.sprite.Sprite(img_obj_home)
     sprite_home.scale = 0.4
 
     # Load pub image
     img_pub = 'pub.png'
     img_obj_pub = pyglet.image.load(img_pub)
+    img_obj_pub.anchor_x = int(img_obj_pub.width * 0.5)
+    img_obj_pub.anchor_y = int(img_obj_pub.height * 0.3)
     sprite_pub = pyglet.sprite.Sprite(img_obj_pub)
     sprite_pub.scale = 1
 
@@ -179,7 +180,7 @@ if __name__ == '__main__':
     # Load people
     #people_home = person.generate_people(graph, 50, 'home', 'random')
     #people_rand = person.generate_people(graph, 50, 'random', 'random')
-    people_pub = person.generate_people(graph, 150, 'pub', 'random')
+    people_pub = person.generate_people(graph, 150, 'pub', 'home')
     people = people_pub #+ people_home + people_rand #
 
     # Load homes
