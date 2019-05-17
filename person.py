@@ -11,7 +11,7 @@ def generate_people(node_graph,number_of_people,type, start_location='home'):
     pub_list = node_graph.pub_list
     node_IDs = list(node_graph.nodes)
 
-    for i in range(number_of_people)
+    for i in range(number_of_people):
 
         home_node = random.choice(home_list)
 
@@ -84,12 +84,19 @@ class person():
           if self.current_node == self.home:
                 print ("I am home")
                 self.active=False
+                self.type='random'
                 self.wakeup_time=global_time+200
           else:
                 self.next_node=self.node_to_home()
 
         if self.type == 'pub':
-            self.next_node = self.node_to_pub()
+            if self.current_node in self.graph.pub_list:
+                print ("I am at pub")
+                self.active=False
+                self.type='home'
+                self.wakeup_time=global_time+200
+            else:
+                self.next_node = self.node_to_pub()
 
 
         # Set speed
@@ -194,7 +201,8 @@ class person():
             # Find shortest distance between current_node and the bar
             d = networkx.shortest_path_length(self.graph, self.current_node, pub)
             distances.append(d)
-        next_node = self.graph.pub_list.index(min(distances))
+        index_nearest_pub  = distances.index(min(distances))
+        next_node = self.graph.pub_list[index_nearest_pub]
         return next_node
 
     def node_shortest_path(self,target):
