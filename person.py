@@ -27,7 +27,6 @@ def generate_people(node_graph,number_of_people,type, start_location='home'):
         else:
             raise ValueError("Invalid person type input")
 
-
         list_people.append(person(start_node, node_graph, type, home_node, name))
 
     return list_people
@@ -80,7 +79,7 @@ class person():
         neighbors = list(self.graph.neighbors(self.current_node))
         if self.type == 'random':
             self.next_node = self.random_node(neighbors)
-        if self.type == 'home':
+        elif self.type == 'home':
           if self.current_node == self.home:
                 print ("I am home")
                 self.active=False
@@ -89,7 +88,7 @@ class person():
           else:
                 self.next_node=self.node_to_home()
 
-        if self.type == 'pub':
+        elif self.type == 'pub':
             if self.current_node in self.graph.pub_list:
                 print ("I am at pub")
                 self.active=False
@@ -98,13 +97,16 @@ class person():
             else:
                 self.next_node = self.node_to_pub()
 
+        if self.type == "zombie":
+            self.next_node = self.random_node(neighbors)
+
 
         # Set speed
         # Constant for now, may change later
         self.speed = 5.0
 
         # Set the relevant positions from the nodes
-        # Check if person has reached his destinaction and is now flagged inactive
+        # Check if person has reached his destination and is now flagged inactive
         if self.active==True:
             self.new_path_positions(self.current_node, self.next_node)
         else:
@@ -190,8 +192,7 @@ class person():
 
     def node_to_pub(self):
         """Returns the next node on the shortest path toward nearest pub"""
-        nearest_pub = self.find_nearest_pub()
-        next_node = self.node_shortest_path(nearest_pub)
+        next_node = self.node_shortest_path(self.graph.nodes[self.current_node]['nearest_pub'])
         return next_node
 
     def find_nearest_pub(self):

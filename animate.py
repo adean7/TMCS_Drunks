@@ -1,10 +1,10 @@
 import pyglet
 import pyglet.gl
 import math
-import graph
+from graph import CustomGraph
 import person
 from PIL import Image
-#import random
+import pickle
 
 
 def circle_vertices(num_verts, radius, center_x=0, center_y=0):
@@ -87,11 +87,15 @@ class graphicsWindow(pyglet.window.Window):
 
         return lon, lat
 
-    def update(self, dt):
+    def update(self, dt, graph):
         # Update the window timer
         self.timer += 1
+        graph.count_zombies_node(self.people)
         for i in range(self.num_people):
-            people[i].update_position(self.timer)
+            if graph.nodes[people[i].current_node]['num_zombies'] > 0:
+                self.people[i].type = 'zombie'
+            self.people[i].update_position(self.timer)
+
 
         self.set_positions(people)
 
@@ -167,11 +171,14 @@ if __name__ == '__main__':
     sprite_pub.scale = 1
 
     # Load graph
-    graph = graph.CustomGraph('stuff_provided/planet_-1.275,51.745_-1.234,51.762.osm.gz')
+#    graph = graph.CustomGraph('stuff_provided/planet_-1.275,51.745_-1.234,51.762.osm.gz')
+    graph = pickle.load(open('graph.pkl', 'rb'))
+    print(graph.pub_list)
 
     # Load people
     people_home = person.generate_people(graph, 50, 'home', 'random')
     people_rand = person.generate_people(graph, 50, 'random', 'random')
+
     #people_pub = person.generate_people(graph, 50, 'pub', 'random')
     people = people_home + people_rand #+ people_pub
 
@@ -186,7 +193,7 @@ if __name__ == '__main__':
     window.set_size(img_width, img_height)
 
     # Tell pyglet the on_draw() & update() timestep
-    pyglet.clock.schedule_interval(window.update, 1 / 30.0)
+    pyglet.clock.schedule_interval(window.update, 1 / 30.0, graph)
 
     # Run pyglet
     pyglet.app.run()
