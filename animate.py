@@ -6,24 +6,39 @@ import person
 from PIL import Image
 #import random
 
-def draw_circle(num_verts, center_x, center_y, radius):
 
-    vertices = []
+def circle_vertices(num_verts, radius, center_x=0, center_y=0):
+    """ Calculate the positions of the vertices in a circle """
 
-    # Some of these values (probably only angles) can be cached for efficiency
+    verts_x = []
+    verts_y = []
+
     for i in range(num_verts):
         angle_rad = 2 * i * math.pi / num_verts
         cos_theta = math.cos(angle_rad)
         sin_theta = math.sin(angle_rad)
-        vertices.append((cos_theta - sin_theta) * radius + center_x)
-        vertices.append((cos_theta + sin_theta) * radius + center_y)
 
-    return vertices
+        verts_x.append((cos_theta - sin_theta) * radius + center_x)
+        verts_y.append((cos_theta + sin_theta) * radius + center_y)
+
+    return verts_x, verts_y
+
+
+def draw_circle(center_x, center_y, verts_x, verts_y):
+
+    coords = []
+
+    for i in range(len(verts_x)):
+        coords.append(center_x + verts_x[i])
+        coords.append(center_y + verts_y[i])
+
+    return coords
+
 
 
 class graphicsWindow(pyglet.window.Window):
 
-    def __init__(self, people, graph):
+    def __init__(self, people, graph, num_verts=8, radius=2.):
 
         # Constructor for graphicsWindow class
         super(graphicsWindow, self).__init__()
@@ -37,6 +52,9 @@ class graphicsWindow(pyglet.window.Window):
 
         # Set initial positions
         self.set_positions(people)
+
+        # Get the coordinates of the vertices on a circle
+        self.verts_x, self.verts_y = circle_vertices(num_verts, radius)
 
 
     def set_positions(self, people):
@@ -61,10 +79,6 @@ class graphicsWindow(pyglet.window.Window):
 
 
     def update(self, dt):
-        '''
-        self.x_pos = [i + self.x_vel for i in self.x_pos]
-        self.y_pos = [i + self.y_vel for i in self.y_pos]
-        '''
 
         for i in range(self.num_people):
             people[i].update_position()
@@ -85,17 +99,22 @@ class graphicsWindow(pyglet.window.Window):
         pyglet.gl.glColor3f(1, 0, 0)
         #pyglet.gl.glPointSize(10)
 
-        num_verts = 8  # Number of vertices of each circle
-        radius = 2  # Radius of circles
+
 
         for i in range(self.num_people):
 
-            # Converts single point to list of points to form a circle
+            # Convert coordinates to image coordinates
             lon, lat = self.convert_coordinate(self.x[i], self.y[i])
-            coords = draw_circle(num_verts, lon, lat, radius)
+
+            # Construct a circle
+            coords = draw_circle(lon, lat, self.verts_x, self.verts_y)
+
+            # Converts single point to list of points to form a circle
+         #   lon, lat = self.convert_coordinate(self.x[i], self.y[i])
+         #   coords = draw_circle(num_verts, lon, lat, radius)
 
             # Draw circles
-            coords_list = pyglet.graphics.vertex_list(num_verts, ('v2f', coords))
+            coords_list = pyglet.graphics.vertex_list(len(self.verts_x), ('v2f', coords))
             coords_list.draw(pyglet.gl.GL_POLYGON)  # Use .GL_POINTS if circles don't need to be filled
 
 
