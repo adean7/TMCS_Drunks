@@ -98,13 +98,16 @@ class person():
             else:
                 self.next_node = self.node_to_pub()
 
+        if self.type == "zombie":
+            self.next_node = self.random_node(neighbors)
+
 
         # Set speed
         # Constant for now, may change later
         self.speed = 5.0
 
         # Set the relevant positions from the nodes
-        # Check if person has reached his destinaction and is now flagged inactive
+        # Check if person has reached his destination and is now flagged inactive
         if self.active==True:
             self.new_path_positions(self.current_node, self.next_node)
         else:
