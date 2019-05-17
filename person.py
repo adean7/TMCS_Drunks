@@ -53,14 +53,16 @@ class person():
         self.type=type_name
         self.home=home_node
         self.active=True
+        self.show=True
 
         # Select a path from the starting node
-        self.make_decision()
+        initial_global_time=0
+        self.make_decision(initial_global_time)
         self.traveled_distance=0
         self.total_distance=False
 
 
-    def make_decision(self):
+    def make_decision(self,global_time):
         """Function to decide which node to travel to next based on current node"""
 
         # Select the next node
@@ -69,9 +71,16 @@ class person():
         if self.type == 'random':
             self.next_node = self.random_node(neighbors)
         if self.type == 'home':
-            self.next_node=self.node_to_home()
+          if self.current_node == self.home:
+                print ("I am home")
+                self.active=False
+                self.wakeup_time=global_time+200
+          else:
+                self.next_node=self.node_to_home()
+
         if self.type == 'pub':
             self.next_node = self.node_to_pub()
+
 
         # Set speed
         # Constant for now, may change later
@@ -113,7 +122,7 @@ class person():
         self.y = start_y
 
 
-    def update_position(self, dt=1):
+    def update_position(self, global_time, dt=1):
         """ Update the positions of a person
         Inputs:     dt, time step
         """
@@ -130,7 +139,7 @@ class person():
                 # If it is, then pick a new path
                 # Updates x,y of person to be at the new node within the function
                 self.current_node = self.next_node
-                self.make_decision()
+                self.make_decision(global_time)
 
             else:
 
@@ -138,7 +147,10 @@ class person():
                 self.x += distance_moved * self.unit_vector[0]
                 self.y += distance_moved * self.unit_vector[1]
         else:
-            pass
+            if global_time==self.wakeup_time:
+                self.type='random'
+                self.active=True
+                print("I am leaving home")
 
 
     def check_at_node(self):
@@ -183,8 +195,8 @@ class person():
             next_node=path[1]
         else:
             next_node=path[0]
-            self.active=False
-            print ("I am home")
+            #self.active=False
+            #print ("I am at destination")
         return next_node
 
 
