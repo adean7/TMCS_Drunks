@@ -2,6 +2,7 @@
 import random
 import networkx
 import names
+import sys
 
 def generate_people(node_graph,number_of_people,type, start_location='home'):
     list_people=[]
@@ -10,15 +11,24 @@ def generate_people(node_graph,number_of_people,type, start_location='home'):
     pub_list = node_graph.pub_list
     node_IDs = list(node_graph.nodes)
 
-    for i in range(number_of_people):
+    for i in range(number_of_people)
+
+        home_node = random.choice(home_list)
+
         if start_location == 'home':
-            home_node = random.choice(home_list)
             start_node = home_node
-        if start_location == 'random':
+
+        elif start_location == 'random':
             start_node = random.choice(node_IDs)
-        if start_location == 'pub':
+
+        elif start_location == 'pub':
             start_node = random.choice(pub_list)
-        list_people.append(person(start_node,node_graph,type,home_node,name))
+
+        else:
+            raise ValueError("Invalid person type input")
+
+
+        list_people.append(person(start_node, node_graph, type, home_node, name))
 
     return list_people
 
