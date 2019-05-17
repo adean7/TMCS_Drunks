@@ -82,6 +82,7 @@ class graphicsWindow(pyglet.window.Window):
 
 
     def update(self, dt):
+        # Update the window timer
         self.timer += 1
         print (self.timer)
         for i in range(self.num_people):
@@ -89,7 +90,7 @@ class graphicsWindow(pyglet.window.Window):
 
         self.set_positions(people)
 
-        # Update the window timer
+    
 
 
 
