@@ -118,7 +118,11 @@ class CustomGraph(networkx.Graph):
             )
 
         # Return the index of the closest pub
-        return numpy.argmin(distances)
+        index = numpy.argmin(distances)
+
+        # Return the ID of the nearest target
+        return target_list[index]
+
 
     def count_zombies_node(self,list_of_people):
         """Counts number of zombies recently on each node"""
