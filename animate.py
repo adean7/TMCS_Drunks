@@ -34,6 +34,12 @@ def draw_circle(center_x, center_y, verts_x, verts_y):
 
     return coords
 
+def get_colour(type):
+    dict = {
+        'home': [0, 0, 1],
+        'random': [1, 0, 0],
+    }
+    return dict.get(type)
 
 
 class graphicsWindow(pyglet.window.Window):
@@ -80,18 +86,13 @@ class graphicsWindow(pyglet.window.Window):
 
         return lon, lat
 
-
     def update(self, dt):
         # Update the window timer
         self.timer += 1
-        print (self.timer)
         for i in range(self.num_people):
             people[i].update_position(self.timer)
 
         self.set_positions(people)
-
-    
-
 
 
     def on_draw(self):
@@ -119,6 +120,10 @@ class graphicsWindow(pyglet.window.Window):
                 # Construct a circle
                 coords = draw_circle(lon, lat, self.verts_x, self.verts_y)
 
+                # Set draw colour depending on person type
+                color = get_colour(people[i].type)
+                pyglet.gl.glColor3f(color[0], color[1], color[2])
+
                 # Draw circles
                 coords_list = pyglet.graphics.vertex_list(len(self.verts_x), ('v2f', coords))
                 coords_list.draw(pyglet.gl.GL_POLYGON)  # Use .GL_POINTS if circles don't need to be filled
@@ -137,7 +142,9 @@ if __name__ == '__main__':
     graph = graph.CustomGraph('stuff_provided/planet_-1.275,51.745_-1.234,51.762.osm.gz')
 
     # Load people
-    people = person.generate_people(graph, 100, 'home', 'random')
+    people_home = person.generate_people(graph, 50, 'home', 'random')
+    people_rand = person.generate_people(graph, 50, 'random', 'random')
+    people = people_home + people_rand
 
     # Create an instance of a window
     window = graphicsWindow(people, graph)
