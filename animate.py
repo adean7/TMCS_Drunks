@@ -59,9 +59,9 @@ class graphicsWindow(pyglet.window.Window):
         self.timer = 0
 
         self.color_list = {
-            'home': [0, 0, 1],  # Blue
+            'home': [0, 0, 1],  # Blue # People going home
             'random': [1, 0, 0],  # Red
-            'pub': [0, 1, 0],  # Green
+            'pub': [0, 0.5, 0],  # Green # People who are drunk
             'none': [0, 0, 0]  # Black
             }
 
@@ -161,8 +161,8 @@ if __name__ == '__main__':
     # Load home image
     img_home = 'home.png'
     img_obj_home = pyglet.image.load(img_home)
-    img_obj_home.anchor_x = img_obj_home.width #* 0.5
-    img_obj_home.anchor_y = img_obj_home.height #* 0.5
+    img_obj_home.anchor_x = int(img_obj_home.width*0.52) #* 0.5
+    img_obj_home.anchor_y = int(img_obj_home.height*0.3) #* 0.5
     sprite_home = pyglet.sprite.Sprite(img_obj_home)
     sprite_home.scale = 0.4
 
