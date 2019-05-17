@@ -97,9 +97,9 @@ class CustomGraph(networkx.Graph):
         # Get a list of node IDs
         node_IDs = list(self.nodes)
 
-        # set number of zombies on each node to zero
+        # Label each node with the number of zombies
         for node in node_IDs:
-            self.zombies[node]=0
+            self.nodes[node]['num_zombies']=0
 
         for ID in node_IDs:
 
@@ -124,15 +124,15 @@ class CustomGraph(networkx.Graph):
         self.home_list = make_node_subset(self, 0.2)
 
     def count_zombies_node(self,list_of_people):
-    """Counts number of zombies recently on each node"""
+        """Counts number of zombies recently on each node"""
         node_IDs = list(self.nodes)
 
         # set number of zombies on each node to zero
         for node in node_IDs:
-            self.zombies[node] = 0
+            self.nodes[node]['num_zombies'] = 0
         for i in range(len(list_of_people)):
             if list_of_people[i].type == 'zombie':
-                self.zombies[list_of_people[i].current_node]+=1
+                self.nodes[list_of_people[i].current_node]['num_zombies']+=1
 
 
     #    self.num_on_edge[]
